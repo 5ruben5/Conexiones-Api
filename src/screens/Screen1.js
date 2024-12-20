@@ -1,13 +1,23 @@
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, Image, Pressable, Alert } from 'react-native';
+import React, { useEffect } from 'react';
+import { StyleSheet, Text, View, Image, Pressable } from 'react-native';
+import { useGameContext } from '../context/GameContext'; // Importa el hook
 
 const Screen1 = () => {
-  const [gameState, setGameState] = useState('start');
-  const [level, setLevel] = useState(1);
-  const [board, setBoard] = useState([]);
-  const [flipped, setFlipped] = useState([]);
-  const [matched, setMatched] = useState([]);
-  const [errors, setErrors] = useState(0);
+  const {
+    gameState,
+    setGameState,
+    level,
+    setLevel,
+    board,
+    setBoard,
+    flipped,
+    setFlipped,
+    matched,
+    setMatched,
+    errors,
+    setErrors,
+    resetGame
+  } = useGameContext(); // Accede al contexto
 
   useEffect(() => {
     if (gameState === 'playing') {
@@ -48,7 +58,7 @@ const Screen1 = () => {
       setMatched([]);
       setTimeout(() => setFlipped([]), 2000);
     } catch (error) {
-      console.error('Error fetching characters:', error);
+      console.error('Error', error);
     }
   };
 
@@ -88,15 +98,6 @@ const Screen1 = () => {
     }
   };
 
-  const resetGame = () => {
-    setGameState('start');
-    setLevel(1);
-    setBoard([]);
-    setFlipped([]);
-    setMatched([]);
-    setErrors(0);
-  };
-
   if (gameState === 'start') {
     return (
       <View style={styles.container}>
@@ -133,10 +134,7 @@ const Screen1 = () => {
     <View style={styles.container}>
       <View style={level === 1 ? styles.boardLevel1 : level === 2 ? styles.boardLevel2 : styles.boardLevel3}>
         {board.map((card, index) => (
-          <Pressable
-            key={index}
-            style={styles.card}
-            onPress={() => handleCardPress(index)}>
+          <Pressable key={index} style={styles.card} onPress={() => handleCardPress(index)}>
             <Image
               style={styles.image}
               source={{ uri: flipped.includes(index) || matched.includes(card.id) ? card.uri : null }}
@@ -186,7 +184,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'center',
-    height: 400,
+    height: 480,
   },
   card: {
     width: 80,
